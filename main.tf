@@ -19,4 +19,7 @@ resource "aws_rds_cluster" "this" {
   master_password         = var.master_password
   backup_retention_period = var.backup_retention_period
   preferred_backup_window = var.preferred_backup_window
+
+  skip_final_snapshot       = var.snapshot_before_deletion
+  final_snapshot_identifier = var.snapshot_before_deletion ? "${var.cluster_identifier}-final-snapshot" : null
 }

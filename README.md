@@ -38,6 +38,7 @@ No modules.
 | <a name="input_cluster_identifier"></a> [cluster\_identifier](#input\_cluster\_identifier) | The cluster identifier. If omitted, Terraform will assign a random, unique identifier. | `string` | `null` | no |
 | <a name="input_create"></a> [create](#input\_create) | Whether the cluster should be created. | `bool` | `true` | no |
 | <a name="input_preferred_backup_window"></a> [preferred\_backup\_window](#input\_preferred\_backup\_window) | Daily time range during which automated backups are created. | `string` | `"00:00-02:00"` | no |
+| <a name="input_snapshot_before_deletion"></a> [snapshot\_before\_deletion](#input\_snapshot\_before\_deletion) | Wheter to perform a final snapshot before deletion. | `bool` | `true` | no |
 
 ## Outputs
 

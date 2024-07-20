@@ -66,3 +66,9 @@ variable "preferred_backup_window" {
   description = "Daily time range during which automated backups are created."
   default     = "00:00-02:00"
 }
+
+variable "snapshot_before_deletion" {
+  type        = bool
+  description = "Wheter to perform a final snapshot before deletion."
+  default     = true
+}
