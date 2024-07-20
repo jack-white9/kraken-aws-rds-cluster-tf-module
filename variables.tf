@@ -4,10 +4,10 @@ variable "create" {
   default     = true
 }
 
-# variable "subnet_ids" {
-#   type = list(string)
-#   description = "Subnet IDs in which the database "
-# }
+variable "subnet_ids" {
+  type        = list(string)
+  description = "Subnet IDs in which the database instances should be created in."
+}
 
 variable "vpc_security_group_ids" {
   type        = list(string)
