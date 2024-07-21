@@ -37,17 +37,17 @@ resource "aws_security_group_rule" "this" {
 resource "aws_rds_cluster" "this" {
   count = var.create ? 1 : 0
 
-  vpc_security_group_ids      = concat([aws_security_group.this[0].id], var.security_groups)
-  db_subnet_group_name        = aws_db_subnet_group.this[0].name
-  cluster_identifier          = var.cluster_identifier
-  engine                      = var.engine
-  availability_zones          = var.availability_zones
-  database_name               = var.database_name
-  manage_master_user_password = var.manage_master_user_password
-  master_username             = var.manage_master_user_password == null ? var.master_username : null
-  master_password             = var.manage_master_user_password == null ? var.master_password : null
-  backup_retention_period     = var.backup_retention_period
-  preferred_backup_window     = var.preferred_backup_window
+  vpc_security_group_ids  = concat([aws_security_group.this[0].id], var.security_groups)
+  db_subnet_group_name    = aws_db_subnet_group.this[0].name
+  cluster_identifier      = var.cluster_identifier
+  engine                  = var.engine
+  availability_zones      = var.availability_zones
+  database_name           = var.database_name
+  backup_retention_period = var.backup_retention_period
+  preferred_backup_window = var.preferred_backup_window
+
+  master_username = var.master_username
+  master_password = random_password.master[0].result
 
   db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.this[0].id
 
@@ -77,16 +77,29 @@ resource "aws_rds_cluster_instance" "read" {
   engine_version     = aws_rds_cluster.this[0].engine_version
 }
 
-# The following config enables the cluster to be used as a AWS DMS source
-data "aws_secretsmanager_secret_version" "aws_rds_cluster_credentials" {
-  count = var.create && var.manage_master_user_password != null ? 1 : 0
+# Create and manage password
+resource "random_password" "master" {
+  count = var.create ? 1 : 0
 
-  secret_id = try(aws_rds_cluster.this[0].master_user_secret[0].secret_arn, null)
+  length           = 16
+  special          = true
+  override_special = "_;+%!^" # unsupported characters for DMS endpoint
 }
 
-locals {
-  managed_username = try(jsondecode(data.aws_secretsmanager_secret_version.aws_rds_cluster_credentials[0].secret_string)["username"], null)
-  managed_password = try(jsondecode(data.aws_secretsmanager_secret_version.aws_rds_cluster_credentials[0].secret_string)["password"], null)
+resource "aws_secretsmanager_secret" "cluster_credentials" {
+  count = var.create ? 1 : 0
+
+  name = "${var.cluster_identifier}-credentials"
+}
+
+resource "aws_secretsmanager_secret_version" "cluster_credentials" {
+  count = var.create ? 1 : 0
+
+  secret_id = aws_secretsmanager_secret.cluster_credentials[0].id
+  secret_string = jsonencode({
+    "username" : var.master_username,
+    "password" : random_password.master[0].result
+  })
 }
 
 resource "aws_rds_cluster_parameter_group" "this" {
@@ -109,8 +122,8 @@ resource "aws_dms_endpoint" "source" {
   endpoint_id   = "${var.cluster_identifier}-source-endpoint"
   endpoint_type = "source"
   engine_name   = aws_rds_cluster.this[0].engine
-  username      = var.manage_master_user_password != null ? local.managed_username : var.master_username
-  password      = var.manage_master_user_password != null ? local.managed_password : var.master_password
+  username      = var.master_username
+  password      = random_password.master[0].result
   server_name   = aws_rds_cluster.this[0].reader_endpoint
   port          = aws_rds_cluster.this[0].port
   database_name = aws_rds_cluster.this[0].database_name

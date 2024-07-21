@@ -72,28 +72,11 @@ variable "database_name" {
   default     = "kraken_database"
 }
 
-variable "manage_master_user_password" {
-  type        = bool
-  description = "Whether to allow RDS to manage the master user/password in Secrets Manager. Must be set to null if master_username or master_password are provided."
-  default     = true
-}
-
 variable "master_username" {
   type        = string
-  description = "Username for the master DB user."
+  description = "Username for the master database user."
   sensitive   = true
-  default     = null
-}
-
-variable "master_password" {
-  type        = string
-  description = "Password for the master DB user."
-  sensitive   = true
-  default     = null
-  validation {
-    condition     = var.master_password != null ? length(var.master_password) >= 8 : true
-    error_message = "Password must contain a minimum of 8 characters."
-  }
+  default     = "foo"
 }
 
 variable "backup_retention_period" {
