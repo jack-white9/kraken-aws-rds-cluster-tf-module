@@ -1,3 +1,64 @@
+# AWS RDS Cluster Module
+
+This module deploys an RDS cluster with two instances – a read instance and a write instance. The module supports a range of inputs with sensible defaults [listed below](#inputs), but the following inputs are required:
+
+- `vpc_id`: The ID of the VPC the DB Cluster will be deployed into
+- `subnet_ids`: Submet IDs in which the database instances should be created in
+- `security_groups`: A list of security group IDs allowed access to the DB cluster.
+
+To deploy an example cluster that comes with a working networking configuration out-of-the-box, see `examples/aurora-postgresql`.
+
+## Usage
+
+```hcl
+module "aws_rds_cluster" {
+  source = "aws_rds_cluster"
+
+  # cluster properties
+  cluster_identifier       = "kraken-aurora-cluster"
+  engine                   = "aurora-postgresql"
+  availability_zones       = ["ap-southeast-2a", "ap-southeast-2b", "ap-southeast-2c"]
+  database_name            = "kraken_database"
+  master_username          = "foo"
+  master_password          = "foobar1234"
+  snapshot_before_deletion = true
+
+  # cluster networking properties
+  vpc_id          = "vpc-12345678"
+  security_groups = ["sg-12345678"]
+  security_group_rules = [{
+    type      = "ingress",
+    from_port = 5432,
+    to_port   = 5432,
+    protocol  = "tcp",
+    self      = true
+  }]
+  subnet_ids = ["subnet-12345678"]
+
+  # instance properties
+  read_instance_class  = "db.r6gd.xlarge"
+  write_instance_class = "db.r6g.large"
+}
+```
+
+## Conditional Creation
+The following value is provided to toggle creation of the associated resources as desired:
+
+```hcl
+# This RDS cluster will not be created
+module "cluster" {
+  source  = "aws_rds_cluster"
+
+  # Disable creation of cluster and all resources
+  create = false
+  # ...
+}
+```
+
+## Examples
+
+- [Aurora PostgreSQL](./examples/aurora-postgresql/): A PostgreSQL cluster with a single read instance and a single write instance.
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
