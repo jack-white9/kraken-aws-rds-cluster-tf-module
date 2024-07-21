@@ -4,6 +4,28 @@ variable "create" {
   default     = true
 }
 
+variable "vpc_id" {
+  type        = string
+  description = "The ID of the VPC to deploy the cluster into."
+}
+
+variable "security_group_rules" {
+  type = list(object({
+    type                     = string,
+    from_port                = string,
+    to_port                  = string,
+    protocol                 = string,
+    description              = optional(string),
+    prefix_list_ids          = optional(list(string)),
+    cidr_blocks              = optional(list(string)),
+    ipv6_cidr_blocks         = optional(list(string)),
+    self                     = optional(bool),
+    source_security_group_id = optional(string)
+    }
+  ))
+  description = "List of security group rules to attach to the cluster."
+}
+
 variable "subnet_ids" {
   type        = list(string)
   description = "Subnet IDs in which the database instances should be created in."
