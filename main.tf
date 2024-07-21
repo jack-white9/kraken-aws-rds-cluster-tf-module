@@ -37,16 +37,17 @@ resource "aws_security_group_rule" "this" {
 resource "aws_rds_cluster" "this" {
   count = var.create ? 1 : 0
 
-  vpc_security_group_ids  = concat([aws_security_group.this[0].id], var.security_groups)
-  db_subnet_group_name    = aws_db_subnet_group.this[0].name
-  cluster_identifier      = var.cluster_identifier
-  engine                  = var.engine
-  availability_zones      = var.availability_zones
-  database_name           = var.database_name
-  master_username         = var.master_username
-  master_password         = var.master_password
-  backup_retention_period = var.backup_retention_period
-  preferred_backup_window = var.preferred_backup_window
+  vpc_security_group_ids      = concat([aws_security_group.this[0].id], var.security_groups)
+  db_subnet_group_name        = aws_db_subnet_group.this[0].name
+  cluster_identifier          = var.cluster_identifier
+  engine                      = var.engine
+  availability_zones          = var.availability_zones
+  database_name               = var.database_name
+  manage_master_user_password = var.manage_master_user_password
+  master_username             = !var.manage_master_user_password ? var.master_username : null
+  master_password             = !var.manage_master_user_password ? var.master_password : null
+  backup_retention_period     = var.backup_retention_period
+  preferred_backup_window     = var.preferred_backup_window
 
   skip_final_snapshot       = !var.snapshot_before_deletion
   final_snapshot_identifier = var.snapshot_before_deletion ? "${var.cluster_identifier}-final-snapshot" : null

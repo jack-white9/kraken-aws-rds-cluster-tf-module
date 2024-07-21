@@ -17,12 +17,13 @@ terraform apply
 ```
 
 <!-- BEGIN_TF_DOCS -->
+
 ## Requirements
 
-| Name | Version |
-|------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.48.0 |
+| Name                                                                     | Version   |
+| ------------------------------------------------------------------------ | --------- |
+| <a name="requirement_terraform"></a> [terraform](#requirement_terraform) | >= 1.0.0  |
+| <a name="requirement_aws"></a> [aws](#requirement_aws)                   | >= 3.48.0 |
 
 ## Providers
 
@@ -30,10 +31,10 @@ No providers.
 
 ## Modules
 
-| Name | Source | Version |
-|------|--------|---------|
-| <a name="module_aws_rds_cluster"></a> [aws\_rds\_cluster](#module\_aws\_rds\_cluster) | ../../ | n/a |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 5.0 |
+| Name                                                                             | Source                        | Version |
+| -------------------------------------------------------------------------------- | ----------------------------- | ------- |
+| <a name="module_aws_rds_cluster"></a> [aws_rds_cluster](#module_aws_rds_cluster) | ../../                        | n/a     |
+| <a name="module_vpc"></a> [vpc](#module_vpc)                                     | terraform-aws-modules/vpc/aws | ~> 5.0  |
 
 ## Resources
 
@@ -46,4 +47,5 @@ No inputs.
 ## Outputs
 
 No outputs.
+
 <!-- END_TF_DOCS -->

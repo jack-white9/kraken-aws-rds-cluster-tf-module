@@ -9,6 +9,17 @@ variable "vpc_id" {
   description = "The ID of the VPC to deploy the cluster into."
 }
 
+variable "subnet_ids" {
+  type        = list(string)
+  description = "Subnet IDs in which the database instances should be created in."
+}
+
+variable "security_groups" {
+  type        = list(string)
+  description = "List of VPC security groups to associate with the cluster."
+  default     = []
+}
+
 variable "security_group_rules" {
   type = list(object({
     type                     = string,
@@ -24,28 +35,25 @@ variable "security_group_rules" {
     }
   ))
   description = "List of security group rules to attach to the cluster."
-}
-
-variable "subnet_ids" {
-  type        = list(string)
-  description = "Subnet IDs in which the database instances should be created in."
-}
-
-variable "security_groups" {
-  type        = list(string)
-  description = "List of VPC security groups to associate with the cluster."
-  default     = []
+  default = [{
+    type      = "ingress",
+    from_port = 5432,
+    to_port   = 5432,
+    protocol  = "tcp",
+    self      = true
+  }]
 }
 
 variable "cluster_identifier" {
   type        = string
   description = "The cluster identifier. If omitted, Terraform will assign a random, unique identifier."
-  default     = null
+  default     = "kraken-aurora-cluster"
 }
 
 variable "engine" {
   type        = string
   description = "Name of the database engine to be used for the cluster."
+  default     = "aurora-postgresql"
   validation {
     condition     = contains(["aurora-mysql", "aurora-postgresql", "mysql", "postgres"], var.engine)
     error_message = "Engine must be 'aurora-mysql', 'aurora-postgresql', 'mysql', or 'postgres'."
@@ -55,25 +63,35 @@ variable "engine" {
 variable "availability_zones" {
   type        = list(string)
   description = "List of EC2 Availability Zones for the cluster storage where cluster instances can be created. 3 AZs recommended."
+  default     = ["ap-southeast-2a", "ap-southeast-2b", "ap-southeast-2c"]
 }
 
 variable "database_name" {
   type        = string
   description = "Name for the database created on cluster creation."
+  default     = "kraken_database"
+}
+
+variable "manage_master_user_password" {
+  type        = bool
+  description = "Whether to allow RDS to manage the master user/password in Secrets Manager."
+  default     = true
 }
 
 variable "master_username" {
   type        = string
   description = "Username for the master DB user."
   sensitive   = true
+  default     = null
 }
 
 variable "master_password" {
   type        = string
   description = "Password for the master DB user."
   sensitive   = true
+  default     = null
   validation {
-    condition     = length(var.master_password) >= 8
+    condition     = var.master_password != null ? length(var.master_password) >= 8 : true
     error_message = "Password must contain a minimum of 8 characters."
   }
 }
@@ -81,7 +99,7 @@ variable "master_password" {
 variable "backup_retention_period" {
   type        = number
   description = "Days to retain backups for."
-  default     = 1
+  default     = 30
 }
 
 variable "preferred_backup_window" {

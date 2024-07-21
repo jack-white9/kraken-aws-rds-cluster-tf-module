@@ -20,28 +20,11 @@ module "vpc" {
 module "aws_rds_cluster" {
   source = "../../"
 
-  # cluster properties
-  cluster_identifier       = "kraken-aurora-cluster"
-  engine                   = "aurora-postgresql"
-  availability_zones       = ["ap-southeast-2a", "ap-southeast-2b", "ap-southeast-2c"]
-  database_name            = "kraken_database"
-  master_username          = "foo"
-  master_password          = "barbarbar"
-  snapshot_before_deletion = true
-
-  # cluster networking properties
   vpc_id          = module.vpc.vpc_id
+  subnet_ids      = module.vpc.private_subnets
   security_groups = [module.vpc.default_security_group_id]
-  security_group_rules = [{
-    type      = "ingress",
-    from_port = 5432,
-    to_port   = 5432,
-    protocol  = "tcp",
-    self      = true
-  }]
-  subnet_ids = module.vpc.private_subnets
 
-  # instance properties
-  read_instance_class  = "db.t3.medium"
+  # optional properties for cost-saving (not intended for prod use – see README)
   write_instance_class = "db.t3.medium"
+  read_instance_class  = "db.t3.medium"
 }
