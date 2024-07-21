@@ -74,7 +74,7 @@ variable "database_name" {
 
 variable "manage_master_user_password" {
   type        = bool
-  description = "Whether to allow RDS to manage the master user/password in Secrets Manager."
+  description = "Whether to allow RDS to manage the master user/password in Secrets Manager. Must be set to null if master_username or master_password are provided."
   default     = true
 }
 
@@ -124,4 +124,16 @@ variable "write_instance_class" {
   type        = string
   description = "Instance class for database write instance."
   default     = "db.r6g.large" # memory-optimised instance class
+}
+
+variable "create_dms_source" {
+  type        = bool
+  description = "Whether to enable the cluster as a source for DMS."
+  default     = true
+}
+
+variable "parameter_group_family" {
+  type        = string
+  description = "The family of the cluster parameter group."
+  default     = "aurora-postgresql15"
 }
