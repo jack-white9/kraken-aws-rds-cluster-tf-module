@@ -83,7 +83,7 @@ resource "random_password" "master" {
 
   length           = 16
   special          = true
-  override_special = "_;+%!^" # unsupported characters for DMS endpoint
+  override_special = "_!^" # supported characters for DMS endpoint
 }
 
 resource "aws_secretsmanager_secret" "cluster_credentials" {
