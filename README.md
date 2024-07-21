@@ -22,6 +22,8 @@ No modules.
 |------|------|
 | [aws_db_subnet_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_subnet_group) | resource |
 | [aws_rds_cluster.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/rds_cluster) | resource |
+| [aws_rds_cluster_instance.read](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/rds_cluster_instance) | resource |
+| [aws_rds_cluster_instance.write](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/rds_cluster_instance) | resource |
 | [aws_security_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
 | [aws_security_group_rule.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
 
@@ -37,18 +39,20 @@ No modules.
 | <a name="input_security_group_rules"></a> [security\_group\_rules](#input\_security\_group\_rules) | List of security group rules to attach to the cluster. | <pre>list(object({<br>    type                     = string,<br>    from_port                = string,<br>    to_port                  = string,<br>    protocol                 = string,<br>    description              = optional(string),<br>    prefix_list_ids          = optional(list(string)),<br>    cidr_blocks              = optional(list(string)),<br>    ipv6_cidr_blocks         = optional(list(string)),<br>    self                     = optional(bool),<br>    source_security_group_id = optional(string)<br>    }<br>  ))</pre> | n/a | yes |
 | <a name="input_subnet_ids"></a> [subnet\_ids](#input\_subnet\_ids) | Subnet IDs in which the database instances should be created in. | `list(string)` | n/a | yes |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | The ID of the VPC to deploy the cluster into. | `string` | n/a | yes |
-| <a name="input_vpc_security_group_ids"></a> [vpc\_security\_group\_ids](#input\_vpc\_security\_group\_ids) | List of VPC security groups to associate with the cluster. | `list(string)` | n/a | yes |
 | <a name="input_backup_retention_period"></a> [backup\_retention\_period](#input\_backup\_retention\_period) | Days to retain backups for. | `number` | `1` | no |
 | <a name="input_cluster_identifier"></a> [cluster\_identifier](#input\_cluster\_identifier) | The cluster identifier. If omitted, Terraform will assign a random, unique identifier. | `string` | `null` | no |
 | <a name="input_create"></a> [create](#input\_create) | Whether the cluster should be created. | `bool` | `true` | no |
 | <a name="input_preferred_backup_window"></a> [preferred\_backup\_window](#input\_preferred\_backup\_window) | Daily time range during which automated backups are created. | `string` | `"00:00-02:00"` | no |
-| <a name="input_snapshot_before_deletion"></a> [snapshot\_before\_deletion](#input\_snapshot\_before\_deletion) | Wheter to perform a final snapshot before deletion. | `bool` | `true` | no |
+| <a name="input_read_instance_class"></a> [read\_instance\_class](#input\_read\_instance\_class) | Instance class for database read instance. | `string` | `"db.r6gd.xlarge"` | no |
+| <a name="input_security_groups"></a> [security\_groups](#input\_security\_groups) | List of VPC security groups to associate with the cluster. | `list(string)` | `[]` | no |
+| <a name="input_snapshot_before_deletion"></a> [snapshot\_before\_deletion](#input\_snapshot\_before\_deletion) | Whether to perform a final snapshot before deletion. | `bool` | `true` | no |
+| <a name="input_write_instance_class"></a> [write\_instance\_class](#input\_write\_instance\_class) | Instance class for database write instance. | `string` | `"db.r6g.large"` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| <a name="output_endpoint"></a> [endpoint](#output\_endpoint) | n/a |
-| <a name="output_reader_endpoint"></a> [reader\_endpoint](#output\_reader\_endpoint) | n/a |
-| <a name="output_security_group_id"></a> [security\_group\_id](#output\_security\_group\_id) | n/a |
+| <a name="output_endpoint"></a> [endpoint](#output\_endpoint) | The DNS address of the cluster. |
+| <a name="output_reader_endpoint"></a> [reader\_endpoint](#output\_reader\_endpoint) | The DNS address of the read replica. |
+| <a name="output_security_group_id"></a> [security\_group\_id](#output\_security\_group\_id) | The ID of the security group attached to the RDS cluster. |
 <!-- END_TF_DOCS -->

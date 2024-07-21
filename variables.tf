@@ -31,9 +31,10 @@ variable "subnet_ids" {
   description = "Subnet IDs in which the database instances should be created in."
 }
 
-variable "vpc_security_group_ids" {
+variable "security_groups" {
   type        = list(string)
   description = "List of VPC security groups to associate with the cluster."
+  default     = []
 }
 
 variable "cluster_identifier" {
@@ -91,6 +92,18 @@ variable "preferred_backup_window" {
 
 variable "snapshot_before_deletion" {
   type        = bool
-  description = "Wheter to perform a final snapshot before deletion."
+  description = "Whether to perform a final snapshot before deletion."
   default     = true
+}
+
+variable "read_instance_class" {
+  type        = string
+  description = "Instance class for database read instance."
+  default     = "db.r6gd.xlarge" # read-optimised instance class for heavy read workloads
+}
+
+variable "write_instance_class" {
+  type        = string
+  description = "Instance class for database write instance."
+  default     = "db.r6g.large" # memory-optimised instance class
 }

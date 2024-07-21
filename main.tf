@@ -37,7 +37,7 @@ resource "aws_security_group_rule" "this" {
 resource "aws_rds_cluster" "this" {
   count = var.create ? 1 : 0
 
-  vpc_security_group_ids  = concat([aws_security_group.this[0].id], var.vpc_security_group_ids)
+  vpc_security_group_ids  = concat([aws_security_group.this[0].id], var.security_groups)
   db_subnet_group_name    = aws_db_subnet_group.this[0].name
   cluster_identifier      = var.cluster_identifier
   engine                  = var.engine
@@ -48,6 +48,28 @@ resource "aws_rds_cluster" "this" {
   backup_retention_period = var.backup_retention_period
   preferred_backup_window = var.preferred_backup_window
 
-  skip_final_snapshot       = var.snapshot_before_deletion
+  skip_final_snapshot       = !var.snapshot_before_deletion
   final_snapshot_identifier = var.snapshot_before_deletion ? "${var.cluster_identifier}-final-snapshot" : null
+}
+
+resource "aws_rds_cluster_instance" "write" {
+  count = var.create ? 1 : 0
+
+  identifier         = "${var.cluster_identifier}-write"
+  cluster_identifier = aws_rds_cluster.this[0].id
+  instance_class     = var.write_instance_class
+  engine             = aws_rds_cluster.this[0].engine
+  engine_version     = aws_rds_cluster.this[0].engine_version
+}
+
+resource "aws_rds_cluster_instance" "read" {
+  count = var.create ? 1 : 0
+  # dependency forces write instance to be deployed first
+  depends_on = [aws_rds_cluster_instance.write]
+
+  identifier         = "${var.cluster_identifier}-read"
+  cluster_identifier = aws_rds_cluster.this[0].id
+  instance_class     = var.read_instance_class
+  engine             = aws_rds_cluster.this[0].engine
+  engine_version     = aws_rds_cluster.this[0].engine_version
 }
